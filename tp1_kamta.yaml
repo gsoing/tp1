@@ -1,0 +1,488 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  version: "1.0.0"
+  title: "Swagger Petstore"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.io"
+basePath: "/v2"
+tags:
+- name: "pet"
+  description: "Everything about your Pets"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "store"
+  description: "Access to Petstore orders"
+- name: "user"
+  description: "Operations about user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
+schemes:
+- "https"
+- "http"
+paths:
+  "Création d'un utilisateur: il devrait entrer son nom, son prenom, son age, son adresse et son email"
+  /user:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "This can only be done by the logged in user."
+      operationId: "createUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+        nom: 
+          type: "string"
+        prenom:
+          type: "string"
+        age:
+          type: "integer"
+        adresse:
+          type: "string"
+        email:
+          type: "string"
+        
+        "L'utilisateur doit également poouvoir renseigner si il est cas covid et préciser la date du test"
+      casCovid:
+        type: "boolean"
+        "si c'est NON, l'utilisateur ne fait rien sinon"
+      DateTest:
+        type: "date-time"
+      responses:
+        default:
+          description: "successful operation"
+  
+  "creation d'un profil"
+  /profil:
+    post:
+      tags:
+      - "profil"
+      summary: "Create profil"
+      description: "This can only be done by the logged in user."
+      operationId: "createProfil"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Profil"
+        nom: 
+          type: "string"
+        prenom:
+          type: "string"
+        age:
+          type: "integer"
+        adresse:
+          type: "string"
+        email:
+          type: "string"
+      casCovid:
+        type: "boolean"
+        "si c'est NON, l'utilisateur ne fait rien sinon"
+      DateTest:
+        type: "date-time"
+      NombreCas:
+        type: "string"
+      responses:
+        default:
+          description: "successful operation"
+  
+  
+"Ici on utilisera la méthode POST car elle permettra de remplir les chmaps définis pour une déclaration et ces informations seront stockées en base"  
+  /informationContact:
+  post:
+      tags:
+      - "information"
+      summary: "Informations Contact"
+      description: "This is to acquaint when you were in contact."
+      operationId: "createInformation"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Information"
+        dateTime: 
+          type: "date-time"
+        lieu:
+          type: "string"
+        typeContact:
+          type: "string"
+        idContact:
+          type: "integer"
+          "si le contact n'est pas trouvé on recupère son nom, prénom, email sinon juste son id"
+          nom: 
+          type: "string"
+        prenom:
+          type: "string"
+        email:
+          type: "string"
+      responses:
+        default:
+          description: "successful operation"
+ 
+          
+  "En tant qu'administrateur je dois pouvoir rechercher un contact par son nom: utilisation de la methode getUserByName de notre service. On utilisera alors le GET"
+  /information/{nom}:
+    get:
+      tags:
+      - "information"
+      summary: "Get information by user name informationContact"
+      description: ""
+      operationId: "getContactByName"
+      produces:
+      - "application/json"
+      parameters:
+      - nom: "nom"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Information"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+  "En tant qu'administrateur, je veux pouvoir lister les utilisateurs. On utilisera ici la méthode GET /user/{nom}"      
+  /user/{nom}:
+    get:
+      tags:
+      - "user"
+      summary: "List of the users by a name"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/json"
+      parameters:
+      - nom: "nom"
+        in: "path"
+        description: "List of the users by a name. "
+        required: true
+        type: "string"
+      -prenom:
+        type: "string"
+      -email:
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Information"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+      
+  "En tant qu'administrateur, je dois pouvoir consulter le profil d'utilisateur. On utilisera ici la méthode GET /profil/{nom}"
+  
+  /profil/{nom}:
+    get:
+      tags:
+      - "profil"
+      summary: "profil user"
+      description: ""
+      operationId: "getListByName"
+      produces:
+      - "application/json"
+      parameters:
+      - nom: "nom"
+        in: "path"
+        description: "List of the users by a name. "
+        required: true
+        type: "string"
+      -prenom:
+        type: "string"
+      -email:
+        type: "string"
+        casCovid:
+        type: "boolean"
+      DateTest:
+        type: "date-time"
+      NombreCas:
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Information"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"                
+  
+  "En tant qu'administrateur je dois pouvoir lister les différents contacts que j'ai déclaré. On utilisera la methode GET "
+  /informationContact
+    get:
+      tags:
+      -"information"
+      summary: "list of different contacts declared"
+      description: "return the list of the contact person declared"
+      operationId: "getInformationContactList"
+      produces:
+      - "application/json"
+      parameters:
+      - dateTime: "date-time" 
+          in: "path"
+          type: "date-time"
+      - lieu: "lieu"
+          in: "path"
+          type: "string"
+      - typeContact:
+          in: "path"
+          type: "string"
+      - idContact:
+          in: "path"
+          type: "integer"
+          "si le contact n'est pas trouvé on recupère son nom, prénom, email sinon juste son id"
+      - nom: 
+          in: "path"
+          type: "string"
+      - prenom:
+          in: "path"
+          type: "string"
+      - email:
+          in: "path"
+          type: "string"
+      description: "The list of different contacts declared. "
+        required: true
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Information"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+          
+  "En tant qu'administrateur, je peux modifier mon profil à partir de mon nom. Le PUT permet de modifier le contenu d'un objet"
+    put:
+      tags:
+      - "user"
+      summary: "Updated user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/json"
+      parameters:
+      - nom: "nom"
+        in: "path"
+        description: "name that need to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        nom: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "200": 
+          description: "Succesfull Update"
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
+          
+  "En tant qu'administrateur je dois pouvoir modifier les éléments de le liste des cas contacts déclarés. On utilisera donc ici la méthode PUT pour mettre à jour les éléments de notre liste. Ici on considère qu'on veut modifier le type de contact"
+  put:
+      tags:
+      - "information"
+      summary: "Updated information"
+      description: ""
+      operationId: "updateInformation"
+      produces:
+      - "application/json"
+      parameters:
+      - typeContact: "typeContact"
+        in: "path"
+        description: "l'objet a modifié"
+        required: true
+        type: "string"
+      - in: "body"
+        typeContact: "body"
+        description: "Updated list"
+        required: true
+        schema:
+          $ref: "#/definitions/Information"
+      responses:
+        "200": 
+          description: "Succesfull Update"
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
+   "En tant qu'administrateur, je peux supprimer un contact que j'ai déclaré à travers l'id de la personne déclarée. On utilisera donc ici la méthode DELETE/information/idContact"       
+    delete:
+      tags:
+      - "information"
+      summary: "Delete information contact"
+      description: "Here, we are goig to delete an information contact by the idContact when he exists."
+      operationId: "deleteInformationContact"
+      produces:
+      - "application/json"
+      parameters:
+      - idContact: "idContact"
+        in: "path"
+        description: "The id of the person contact that need to be deleted "
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "Successful delete"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Order:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      petId:
+        type: "integer"
+        format: "int64"
+      quantity:
+        type: "integer"
+        format: "int32"
+      shipDate:
+        type: "string"
+        format: "date-time"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "placed"
+        - "approved"
+        - "delivered"
+      complete:
+        type: "boolean"
+        default: false
+    xml:
+      name: "Order"
+  Category:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Category"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      userStatus:
+        type: "integer"
+        format: "int32"
+        description: "User Status"
+    xml:
+      name: "User"
+  Tag:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Tag"
+  Pet:
+    type: "object"
+    required:
+    - "name"
+    - "photoUrls"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      category:
+        $ref: "#/definitions/Category"
+      name:
+        type: "string"
+        example: "doggie"
+      photoUrls:
+        type: "array"
+        xml:
+          name: "photoUrl"
+          wrapped: true
+        items:
+          type: "string"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+      status:
+        type: "string"
+        description: "pet status in the store"
+        enum:
+        - "available"
+        - "pending"
+        - "sold"
+    xml:
+      name: "Pet"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

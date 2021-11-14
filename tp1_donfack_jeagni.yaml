@@ -1,0 +1,294 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Stop COVID
+  description: Ma super API contre le COVID
+  license:
+    name: MIT
+servers:
+  - url: http://users.swagger.io/v1
+paths:
+  /profile:
+    post:
+      tags:
+      - "profile"
+      summary: "Create a user's profile"
+      description: ""
+      operationId: "createProfile"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in : "body"
+          name: "body"
+          description: "Profile object that needs to be added to the application"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Profile"
+      responses:
+        default:
+          description: "successful operation"
+  /profile/{profileId}:
+    patch:
+      tags:
+      - "profile"
+      summary: "Update my profile information with form data"
+      description: ""
+      operationId: "UpdateProfileWithForm"
+      parameters:
+      - name: profileId
+        in: path
+        description: "id that need to be updated"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          'application/x-www-form-urlencoded':
+            schema:
+              properties:
+                lastname:
+                  description: Updated name of the pet
+                  type: string
+                firstname:
+                  description: Updated lastname of the profile
+                  type: string
+                age:
+                  description:
+                  type: integer
+                  format: "int64"
+                email:
+                  description: updated email of the profile
+                  type: string
+                address:
+                  description: updated address of the profile
+                  type: string
+                
+              required:
+                - lastname
+                - email
+      responses:
+        '200':
+          description: Profile updated.
+          content: 
+            'application/json': {}
+        '405':
+          description: Method Not Allowed
+          content: 
+            'application/json': {}
+      
+  /profile/{lastname}:
+    get:
+      tags:
+      - "profile"
+      summary: "Get a profile by his lastname"
+      description: ""
+      operationId: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "lastname"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: "successful operation : profile response"
+          content:
+            '*/*' :
+              schema:
+                items:
+                  $ref: '#/components/schemas/Profile'
+              
+          schema:
+            $ref: "#/components/schemas/Profile"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "Profile not found"
+  /profile/{email}:
+    get:
+      tags:
+      - "profile"
+      summary: "Get a profile by his email"
+      description: ""
+      operationId: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "email"
+        in: "path"
+        description: "The email that needs to be fetched. "
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: "successful operation : profile response"
+          content:
+            '*/*' :
+              schema:
+                items:
+                  $ref: '#/components/schemas/Profile'
+              
+          schema:
+            $ref: "#/components/schemas/Profile"
+        "400":
+          description: "Invalid email supplied"
+        "404":
+          description: "Profile not found"
+  /profile/declare/:
+    post:
+      tags:
+      - "profile"
+      summary: "Declare covid for a profile with form"
+      description: ""
+      operationId: "DeclareCovidProfile"
+      requestBody:
+        content:
+          'application/x-www-form-urlencoded':
+            schema:
+              properties:
+                secretIdentifiant:
+                  description:  secretIdentifiant of the profile know by him
+                  type: string
+                date:
+                  description: date of the test
+                  type: string
+              required:
+                - secretIdentifiant
+                - date
+      responses:
+        '200':
+          description: Declaration send.
+          content: 
+            'application/json': {}
+        '405':
+          description: Method Not Allowed
+          content: 
+            'application/json': {}
+  /admin/users/{lastname}:
+    get:
+      tags:
+      - "profile"
+      summary: "Get a profile by his lastname"
+      description: ""
+      operationId: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "lastname"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: "successful operation : profile response"
+          content:
+            '*/*' :
+              schema:
+                items:
+                  $ref: '#/components/schemas/Profile'
+              
+          schema:
+            $ref: "#/components/schemas/Profile"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "Profile not found"
+  /admin/users/{email}:
+    get:
+      tags:
+      - "profile"
+      summary: "Get a profile by his email"
+      description: ""
+      operationId: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "email"
+        in: "path"
+        description: "The email that needs to be fetched. "
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: "successful operation : profile response"
+          content:
+            '*/*' :
+              schema:
+                items:
+                  $ref: '#/components/schemas/Profile'
+              
+          schema:
+            $ref: "#/components/schemas/Profile"
+        "400":
+          description: "Invalid email supplied"
+        "404":
+          description: "Profile not found"
+
+components:
+  schemas:
+    Profile:
+      type: object
+      required: 
+      - lastname 
+      - email
+      properties:
+        id:
+          type: integer
+          format: "int64"
+        firstname:
+          type: "string"
+        lastname:
+          type: "string"
+        age:
+          type: integer
+          format: "int64"
+        email:
+          type: "string"
+        address:
+          type: "string"
+        secretIdentifiant:
+          type: "string"
+          
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: "int64"
+        date:
+          type: "string"
+        lieu:
+          type: "string"
+        type:
+          type: "string"
+        address:
+          type: "string"
+        profileId:
+          type: integer
+          format: "int64"
+    Declaration:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: "int64"
+        secretIdentifiant:
+          type: string
+        date:
+          type: "string"
+        
+        
+    
