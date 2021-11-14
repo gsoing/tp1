@@ -1,0 +1,468 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: "COVID Tracker"
+  description: |
+    Cette api décrit les interactions entre un utilisateur final et l'application COVID Tracker, on considère que l'utilisateur est loggé et que les informations d'authentification sont passée via un token JWT
+servers:
+  - url: http://localhost:8080/
+tags:
+  - name: user
+    description: toutes les opérations reliées à un utilisateur final
+  - name: admin
+    description: toutes les opérations liées à un administrateur
+paths:
+  /profiles/current:
+    put:
+      tags:
+        - user
+      description: "Crée ou met à jour un utilisateur, current représente l'utilisateur connecté a l'instant T"
+      requestBody:
+        description: la définition du profile
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        201:
+          description: Le profile n'existait pas et il a été créé
+          headers:
+           Location: 
+            $ref: '#/components/headers/Location'
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Profile'
+        200:
+          description: le profile a été mis à jour
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Profile'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+  /profiles/current/contacts:
+    put:
+      tags:
+        - user
+      requestBody:
+        description: le contact à déclarer, si le contactId n'est pas présent il faut passer les information du contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        201: 
+          description: le contact est créé
+          content:
+            application/json::
+              schema:
+               $ref: '#/components/schemas/Contact'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Results'
+      responses:
+        200:
+          description: la liste des contacts que l'utilisateur a déclaré, l'interface retourne toujours 200 mais la liste peut-être vide
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf: 
+                  - $ref: '#/components/schemas/SearchResults'
+                  - properties:
+                      data: 
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contact'
+  /profiles/current/contacts/{contactId}:
+    parameters:
+      - name: contactId
+        schema: 
+          type: string
+        required: true
+        in: path
+        description: identifiant du contact lié à l'utilisateur courant
+    delete:
+      tags:
+        - user
+      responses:
+        204:
+          description: la suppression a bien eu lieu
+        404:
+          $ref: '#/components/responses/NotFound'
+        500: 
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+        - user
+      requestBody:
+        description: le contact à mettre à jour
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        200: 
+          description: le contact est créé
+          content:
+            application/json::
+              schema:
+               $ref: '#/components/schemas/Contact'
+        404:
+          $ref: '#/components/responses/NotFound'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+  /profiles/current/sick:
+    put:
+      tags:
+        - user
+      description: permet de se déclarer malade
+      requestBody:
+        description: déclare la date de mon test positif
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                testDate: 
+                  type: string
+                  format: date-time
+      responses:
+        204:
+          description: la déclaration est effectuée
+        404:
+          $ref: '#/components/responses/NotFound'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+  /contacts:
+    get:
+      description: permet de chercher dans la base des contacts
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Results'
+        - name: mail
+          description: mail du contact à chercher
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: lastName
+          description: Nom de famille du contact à chercher
+          required: false
+          schema: 
+            type: string
+          in: query
+      responses:
+        200:
+          description: liste des contacts trouvés
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/SearchResults'
+                  - type: object
+                    properties:
+                      data: 
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            profileId:
+                              type: string
+                              description: identifiant du contact
+                            firstName:
+                              type: string
+                              description: prénom du contact
+                            lastName: 
+                              type: string
+                              description: Nom du contact
+                            mail:
+                              type: string
+                              description: mail du contact
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+  /profiles:
+    get:
+      tags:
+        - admin
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Results'
+        - name: mail
+          description: mail du profile à chercher
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: lastName
+          description: Nom de famille du profile à chercher
+          required: false
+          schema: 
+            type: string
+          in: query
+      responses:
+        200:
+          description: liste des profiles trouvés
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/SearchResults'
+                  - type: object
+                    properties:
+                      data: 
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            contactId:
+                              type: string
+                              description: identifiant du contact
+                            firstName:
+                              type: string
+                              description: prénom du contact
+                            lastName: 
+                              type: string
+                              description: Nom du contact
+                            mail:
+                              type: string
+                              description: mail du contact
+  /profiles/{profileId}:
+    parameters:
+      - $ref: '#/components/parameters/ProfileId'
+    get:
+      tags: 
+        - admin
+      description: récupère la définition d'un profile utilisateur
+      responses:
+        200:
+          description: le profile demandé
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Profile'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500: 
+          $ref: '#/components/responses/ServerError'
+  /profiles/{profileId}/contacts:
+    get:
+      tags:
+        - admin
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Results'
+      responses:
+        200:
+          description: la liste des contacts que l'utilisateur a déclaré, l'interface retourne toujours 200 mais la liste peut-être vide
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf: 
+                  - $ref: '#/components/schemas/SearchResults'
+                  - properties:
+                      data: 
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contact'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+  /alert:
+    post:
+      tags:
+        - admin
+      description: alerte une liste de profile qu'ils sont cas contacts
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                contactDate:
+                  type: string
+                  format: date-time
+                  description: date et heure du contact
+                profiles:
+                  description: liste de profile à notifier
+                  type: array
+                  items:
+                    type: string
+      responses:
+        204:
+          description: la notification est correctement envoyée
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500: 
+          $ref: '#/components/responses/ServerError'
+components:
+  schemas:
+    GenericObject:
+      description: object générique qui contient les informations communes a tous les objets
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date-time
+          description: date de création de l'objet définie par l'application
+        modificationDate:
+          type: string
+          format: date-time
+          description: date de modification de l'objet définie par le serveur
+    SearchResults:
+      description: liste de résultats générique
+      type: object
+      properties:
+        totalResults:
+          type: integer
+          description: nombre total de résultats
+        nbResults:
+          type: integer
+          description: nombre de résultats dans la page
+        firstPage:
+          type: string
+          description: url de la première page
+        lastPage: 
+          type: string
+          description: url de la dernière page
+        next: 
+          type: string
+          description: url de la page suivate
+    Profile:
+      description: Profile d'un utilisateur
+      type: object
+      required:
+        - name
+        - mail
+      allOf: 
+        - $ref: '#/components/schemas/GenericObject'
+        - properties:
+            lastName: 
+              type: string
+              description: Nom de l'utilisateur
+            firstName:
+              type: string
+              description: Prénom de l'utilisateur
+            age:
+              type: integer
+              description: age de l'utilisateur
+            mail: 
+              type: string
+              format: mail
+              description: mail de l'utilisateur
+    Contact:
+      type: object
+      description: Définition d'un contact
+      allOf: 
+        - $ref: '#/components/schemas/GenericObject'
+        - properties:
+            contactDate:
+              type: string
+              format: date-time
+              description: date et heure du contact
+            place:
+              type: string
+              description: adresse du lieu ou le contact a eu lieu
+            contactType:
+              type: string
+              enum:
+                - WITH_MASK
+                - WITHOUT_MASK
+            contactId: 
+              type: string
+              description: identifiant du contact si ce dernier existe déjà
+            contactInformations:
+              type: object
+              description: information du contact pour pouvoir le créer
+              properties:
+                lastName: 
+                  type: string
+                  description: nom du contact
+                firstName: 
+                  type: string
+                  description: prénom du contact
+                mail:
+                  type: string
+                  description: mail du contact
+                  format: mail
+    Error:
+      description: Object retourné en cas d'erreur, il contient un tableau d'erreur
+      type: array
+      items:
+        type: object
+        properties:
+          errorCode: 
+            type: string
+            description: le code de l'erreur
+          errorMessage:
+            type: string
+            description: le message de l'erreur
+  responses:
+    BadRequest:
+      description: la requête en entrée n'est pas correctement formatée
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: erreur interne du serveur
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: la ressource n'existe pas
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  headers:
+    Location:
+      description: url de la ressource qui vient d'être crée
+      schema:
+        type: string
+        format: url
+  parameters:
+    Page:
+      description: numéro de la page souhaitée
+      in: query
+      name: page
+      schema:
+        type: integer
+      required: false
+    Results:
+      description: nombre de résultats souhaités
+      in: query
+      name: results
+      schema:
+        type: integer
+      required: false  
+    ProfileId:
+      name: profileId
+      description: id du profile
+      in: path
+      required: true
+      schema:
+        type: string

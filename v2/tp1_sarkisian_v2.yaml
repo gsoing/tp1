@@ -1,0 +1,473 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Stop COVID
+  description: Ma super API contre le COVID DURANT TOUT LE CONTRÔLE, EMAIL EST CONSIDEREE COMME UNE CLE PRIMAIRE
+  license:
+    name: MIT
+servers:
+  - url: http://stopcovid/api
+paths:
+
+  /profiles:
+    post:
+      summary: Create a profile, 
+      operationId: createProfile
+      tags:
+      - "PROFILE"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: error the profile has not been added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+  /profiles/{email}:
+    put:
+      tags:
+      - "PROFILE"
+      summary: Update a profile
+      parameters:
+        - name: email
+          in: path
+          description: the email of the profile to update
+          required: true
+          schema:
+            type: string
+      requestBody: 
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+      responses:
+        '204':
+          description: Null response
+        default:
+          description: error the profile has not been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /contacts/{name}:
+    get:
+      tags:
+      - "CONTACT"
+      summary: search a contact by name
+      operationId: searchAContactByName
+      parameters:
+        - name: name
+          in: path
+          description: name of the contact to find
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: return the contact searched as a response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'   
+        default:
+          description: error contact not found with the given name
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+  /contacts/{email}:
+    put:
+      tags:
+      - "CONTACT"
+      summary: update a contact by mail
+      operationId: updateAContactByMail
+      parameters:
+        - name: email
+          in: path
+          description: email of the contact to update
+          required: true
+          schema:
+            type: string
+      requestBody: 
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+      responses:
+        '204':
+          description: Null response
+        default:
+          description: error the contact has not been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    
+    get:
+      tags:
+      - "CONTACT"
+      summary: search a contact by email
+      operationId: searchAContactByEMail
+      parameters:
+        - name: email
+          in: path
+          description: email of the contact we want to find
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: return the contact searched as a response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'   
+        default:
+          description: error contact not found with the given name
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      
+  /contacts/list:
+    get:
+      tags:
+      - "CONTACT"
+      summary: search the list of contacts for the current user
+      operationId: searchAllContacts
+      responses:
+        '200':
+          description: return the list of contacts for the current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'   
+        default:
+          description: error 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /contacts/list/{email}:
+    get:
+      tags:
+      - "CONTACT"
+      summary: search a contact in the contacts list by email
+      operationId: searchAContactByEmail
+      parameters:
+        - name: email
+          in: path
+          description: email of the contact we want to find in the list
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: return the contact searched as a response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'   
+        default:
+          description: error contact not found with the given email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+    delete:
+      tags:
+      - "CONTACT"
+      summary: delete a contact in the contact list by email
+      operationId: deleteAContactInListByEmail
+      parameters:
+        - name: email
+          in: path
+          description: email refering to the contact the user wants to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Null response
+        default:
+          description: error during the deletion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+  /cases:
+    post:
+      summary: Create a case
+      operationId: createACase
+      tags:
+      - "CASE"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Case'
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: error the case has not been added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      
+  /declarations:
+    post:
+      summary: Create a declaration for the current user
+      operationId: createDeclaration
+      tags:
+      - "DECLARATION"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Declaration'
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: error the declaration has not been added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users/{name}:
+    get:
+      tags:
+      - "USER"
+      summary: return a user referring to its name with specific values only email, first name and last name
+      parameters:
+        - name: name
+          in: path
+          description: name of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user with name not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: error the profile has not been added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+  /users/{email}:
+    get:
+      tags:
+      - "USER"
+      summary: return a user referring to its email with specific values only email, first name and last name
+      parameters:
+        - name: email
+          in: path
+          description: email of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user with email not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: error 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /userprofiles/{email}:
+    get:
+      tags:
+      - "USERPROFILE"
+      summary: return a userprofile referring to its email 
+      parameters:
+        - name: email
+          in: path
+          description: email of the userprofile
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: userprofile with email not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        default:
+          description: error the profile has not been added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /userprofiles/{email}/contacts/list:
+    get:
+      tags:
+      - "USERPROFILE"
+      summary: search all contacts of the selected userprofile by the email
+      operationId: searchAllContactsOfTheUserProfile
+      parameters:
+        - name: email
+          in: path
+          description: email of the userprofile on which we want to list all contacts
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: return the list of contacts of a userprofile searched as a response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'   
+        default:
+          description: error contact not found with the given email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /alert:
+    post:
+      summary: Create an alert and send it to the list of user (users) 
+      operationId: createAnAlertAndSendItToUsers
+      tags:
+      - "ALERT"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Alert'
+      responses:
+        '201':
+          description: return the Alert sent to
+        default:
+          description: error the alert has not been sended to the list of user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Profile:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        age:
+          type: integer
+        address:
+          type: string
+        email:
+          type: string
+    Case:
+      type: object
+      properties:
+        date:
+          type: integer
+        location:
+          type: string
+        typeOfContact:
+          type: boolean
+        contact:
+          $ref: '#/components/schemas/Contact'
+    Contact:
+      type: object
+      properties:
+        id_contact:
+          type: integer
+          format : int64
+        last_name:
+          type: string
+        first_name:
+          type: boolean
+        email:
+          type: string
+    Contacts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Contact'
+    Declaration:
+      type: object
+      properties:
+        date:
+          type: integer
+    UserProfile:
+      type: object
+      properties:
+        covid_status:
+          type: boolean
+        number_of_contact:
+          type: integer
+        profile:
+          $ref: '#/components/schemas/Profile'
+    User:
+      type: object
+      properties:
+        last_name:
+          type: string
+        first_name:
+          type: boolean
+        email:
+          type: string    
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    Alert:
+      type: object
+      properties:
+        email:
+          type: string
+        dateofcontact:
+          type: integer
+        users:
+          $ref: '#/components/schemas/Users'
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

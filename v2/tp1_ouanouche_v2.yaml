@@ -1,0 +1,463 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Stop COVID
+  description: Ma super API contre le COVID - Sami OUANOUCHE
+  license:
+    name: MIT
+servers:
+  - url: http://stopcovid/api/v1
+paths:
+
+  /profiles:
+    post:
+      summary: Create a new profile
+      tags:
+        - Profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '201':
+          description: Profile Created
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /profiles/{email}:
+    put:
+      summary: Update a profile
+      tags:
+        - Profiles
+      parameters:
+        - name: email
+          in: path
+          description: Return the email of the profile
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '204':
+          description: Profile Updated
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cases:
+    post:
+      summary: Create a new Case
+      tags:
+        - Cases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Case'
+      responses:
+        '201':
+          description: Case Created
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contacts/{name}:
+    get:
+      summary: Return a Contact thanks to the name
+      tags:
+        - Contact
+      parameters:
+        - name: name
+          in: path
+          description: name of the contact
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return a contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contacts/{email}:
+    get:
+      summary: Return a Contact thanks to the email
+      tags:
+        - Contact
+      parameters:
+        - name: email
+          in: path
+          description: email of the contact
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return a contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contacts/listofcontacts/{email}:
+    get:
+      summary: Return the list of contacts of the user
+      tags:
+        - Contact
+      parameters:
+        - name: email
+          in: path
+          description: email of the user who want to see his contacts
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return lits of contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update an existing contact
+      tags:
+        - Contact
+      parameters:
+        - name: email
+          in: path
+          description: Email of the contact
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '204':
+          description: Contact Updated
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete an existing contact
+      tags:
+        - Contact
+      parameters:
+        - name: email
+          in: path
+          description: Email of contact to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Contact Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contacts/listofcontacts/:
+    get:
+      summary: Return the list of contacts of the user
+      tags:
+        - Contact
+      responses:
+        '200':
+          description: Return lits of contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /covidTest:
+    post:
+      summary: 'Create a CovidTest declaration'
+      tags:
+        - CovidTest
+      description: declaration of the test
+      operationId: ''
+      requestBody:
+        description: Test add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CovidTest'
+      responses:
+        '201':
+          description: Test declared
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{name}:
+    get:
+      summary: 'You are searching a user by its name'
+      tags:
+        - Users
+      description: search user by name
+      operationId: ''
+      parameters:
+        - name: name
+          in: path
+          description: name of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{email}:
+    get:
+      summary: 'You are searching a user by its email'
+      tags:
+        - Users
+      description: search user by email
+      operationId: ''
+      parameters:
+        - name: email
+          in: path
+          description: email of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /userProfile/{email}:
+    get:
+      summary: 'You are searching a userProfile by its email'
+      tags:
+        - Users
+      description: return the profil of a user
+      operationId: ''
+      parameters:
+        - name: email
+          in: path
+          description: email of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: UserProfile response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{email}/contacts:
+    get:
+      summary: 'You are returning the user list of a contact'
+      tags:
+        - Users
+      description: return the user list of contact
+      operationId: ''
+      parameters:
+        - name: email
+          in: path
+          description: email of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: list of contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/notification:
+    post:
+      summary: 'You are sending to somes users that they have COVID'
+      tags:
+        - Users
+      description: Notify the users that they are contact case
+      operationId: ''
+      requestBody:
+        description: Notify the users that they are contact case
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '201':
+          description: Notification response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+components:
+  schemas:
+    Profile:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        age:
+          type: integer
+        address:
+          type: string
+        email:
+          type: string
+    Contact:
+      type: object
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        email:
+          type: string
+    Contacts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Contact'
+    Case:
+      type: object
+      properties:
+        date:
+          type: integer
+        place:
+          type: string
+        typeOfContact:
+          type: boolean
+        contact:
+          $ref: '#/components/schemas/Contact'
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        email:
+          type: string
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    UserProfile:
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/Profile'
+        statusCovid:
+          type: boolean
+        numberOfContact:
+          type: integer
+    CovidTest:
+      type: object
+      properties:
+        date:
+          type: object
+        positive:
+          type: boolean
+    Notification:
+      type: object
+      properties:
+        email:
+          type: string
+        date:
+          type: integer
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

@@ -1,0 +1,506 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  version: "1.0.0"
+  title: "Stop COVID"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "MIT"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.io"
+basePath: "/v2"
+tags:
+- name: "stop COVID"
+  description: "Ma super API contre le COVID"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "user"
+  description: "Operations about user"
+- name: "contacting info"
+  description: "Contacting info of an user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
+schemes:
+- "https"
+- "http"
+paths:
+  /contactInfo:
+    post:
+        tags:
+        - "user"
+        summary: "Place a contacted info"
+        description: ""
+        operationId: "contactInfo"
+        produces:
+        - "application/xml"
+        - "application/json"
+        parameters:
+        - name: "contactId"
+          in: "path"
+          description: ""
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "contacted user's info"
+          required: true
+          schema:
+            $ref: "#/definitions/ContactInfo"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/ContactInfo"
+          "400":
+            description: "Invalid Info"
+  
+      post:
+        tags:
+        - "user"
+        summary: "Place a alert"
+        description: "*************Pas eu le temps de finir******"
+        operationId: "alert"
+        produces:
+        - "application/xml"
+        - "application/json"
+        parameters:
+        - name: "contactId"
+          in: "path"
+          description: ""
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "contacted user's info"
+          required: true
+          schema:
+            $ref: "#/definitions/ContactInfo"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/ContactInfo"
+          "400":
+            description: "Invalid Info"
+    get:
+      tags:
+      - "contactInfo"
+      summary: "Find contactInfo by ID"
+      description: ""
+      operationId: "getContactInfoById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "contactId"
+        in: "path"
+        description: ""
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ContactInfo"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "ContactInfo not found"
+    delete:
+      tags:
+      - "contactInfo"
+      summary: "Delete contacting info by ID"
+      description: ""
+      operationId: "deleteContactInfo"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "contactId"
+        in: "path"
+        description: "ID of the order that needs to be deleted"
+        required: true
+        type: "integer"
+        minimum: 1.0
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Contacting information not found"
+  /user:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "This can only be done by the logged in user."
+      operationId: "createUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/findByLastName/{lastName}:
+    get:
+      tags:
+      - "user"
+      summary: "Finds User by last name"
+      description: "Can return multiple users"
+      operationId: "findUserByLastName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "lastName"
+        type: "string"
+        required: true
+      
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        "400":
+          description: "failed operation"
+  /user/findByMail/{mail}:
+    get:
+      tags:
+      - "user"
+      summary: "Finds User by mail"
+      description: "Returns only one user"
+      operationId: "findUserByMail"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "mail"
+        type: "string"
+        required: true
+      
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        "400":
+          description: "failed operation"
+  /user/contactNb/{id}:
+    post:
+      tags:
+      - "user"
+      summary: "Set/Update user's contected number"
+      description: "Other users who were contacted by this user"
+      operationId: "contactNb"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: "string"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/addContactUserList/{id}/{idContact}:
+    post:
+      tags:
+      - "user"
+      summary: "Creates list of users with given input array"
+      description: "List of other users who contacted this user"
+      operationId: "createUsersWithListInput"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: "string"
+        required: true
+      - in: "path"
+        name: "idContact"
+        type: "string"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "List of user object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/login:
+    get:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "string"
+          headers:
+            X-Rate-Limit:
+              type: "integer"
+              format: "int32"
+              description: "calls per hour allowed by the user"
+            X-Expires-After:
+              type: "string"
+              format: "date-time"
+              description: "date in UTC when token expires"
+        "400":
+          description: "Invalid username/password supplied"
+  /user/logout:
+    get:
+      tags:
+      - "user"
+      summary: "Logs out current logged in user session"
+      description: ""
+      operationId: "logoutUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        default:
+          description: "successful operation"
+  /user/{id}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user by user name"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "The name that needs to be fetched. Use user1 for testing."
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Update user's profil"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "User id that need to be updated"
+        type: "string"
+        required: true
+        
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user"
+      description: "This can only be done by the logged in user."
+      operationId: "deleteUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "The name that needs to be deleted"
+        type: "string"
+        required: true
+      responses:
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+          
+  /user/declareCovid:
+    post:
+      tags:
+      - "user"
+      summary: "Declare covid positive"
+      description: ""
+      operationId: "covid"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "user"
+        required: true
+        schema:
+          type: "object"
+          items:
+            $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+definitions:
+  User:
+    type: "object"
+    required:
+    - "id"
+    - "lastName"
+    - "email"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Required, to avoid same name"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      age:
+        type: "string"
+      address:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      contactedNum:
+        type: "integer"
+        format: "int32"
+        description: "User's contacted number"
+      covid:
+        type: "string"
+        enum:
+        - "negative"
+        - "positive"
+        default: "negative"
+    xml:
+      name: "User"
+      
+  Admin:
+    type: "object"
+    required:
+      - "id"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      mail:
+        type: "string"
+    xml:
+      name: "Admin"
+      
+  Tag:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Tag"
+  ContactInfo:
+    type: "object"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      datetime:
+        type: "string"
+      place:
+        type: "string"
+      type:
+          type: "string"
+          enum:
+          - "with mask"
+          - "no mask"
+          default: "no mask"
+      user:
+        type: "object"
+        $ref: '#/definitions/User'
+        description: "User Object"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

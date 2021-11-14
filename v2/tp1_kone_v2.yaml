@@ -1,0 +1,268 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Stop COVID
+  description: Ma super API contre le COVID
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+tags:
+  - name: Profile
+  - name: Contact
+  - name: Covid
+  - name: Alert
+paths:
+  /profile:
+    parameters:
+      - in: query
+        name: "body"
+        description: "Profile object that needs to be added"
+        required: true
+        schema:
+          $ref: '#/components/schemas/Profile'
+    post:
+      tags: 
+      - Profile
+      responses:
+        '200':
+          description: profile added
+  /profile/update/{id}:
+    parameters:
+      - name: "id"
+        in: path
+        description: "id of profile that need to be updated"
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: "body"
+        description: "Profile object that needs to be updated"
+        required: true
+        schema:
+          $ref: '#/components/schemas/Profile'
+    put:
+      tags: 
+      - Profile
+      responses:
+        '200':
+          description: profile updated
+  /profile/{nameoremail}:
+    parameters:
+      - name: "nameoremail"
+        in: path
+        description: "id of profile by name or email"
+        required: true
+        schema:
+          type: string
+    get:
+      tags: 
+      - Profile
+      responses:
+        '200':
+          description: "Profil got"
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+  /profile/user/{nameoremail}:
+    parameters:
+      - name: "nameoremail"
+        in: path
+        description: "id of profile by name or email to be got"
+        required: true
+        schema:
+          type: string
+    get:
+      tags: 
+      - Profile
+      responses:
+        '200':
+          description: "Idprofil got"
+          content: 
+            application/json:
+              schema:
+                type: integer
+  /profile/admin/{nameoremail}:
+    parameters:
+      - name: "nameoremail"
+        in: path
+        description: "id of profile by name or email"
+        required: true
+        schema:
+          type: string
+    get:
+      tags: 
+      - Profile
+      responses:
+        '200':
+          description: "Profil got"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastname:
+                    type: string
+                  firstname:
+                    type: string
+                  email:
+                    type: string
+  /contacts/{id}:
+    parameters:
+      - name: "id"
+        in: path
+        description: "id of contact that need to be got"
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: 
+      - Contact
+      responses:
+        '200':
+          description: "contacts got"
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+  /contact/update/{id}:
+    parameters:
+      - name: "id"
+        in: path
+        description: "id of contact that need to be updated"
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: "body"
+        description: "Contact object that needs to be updated"
+        required: true
+        schema:
+          $ref: '#/components/schemas/Contact'
+    put:
+      tags: 
+      - Contact
+      responses:
+        '200':
+          description: contact updated
+  /contact/delete/{id}:
+    parameters:
+      - name: "id"
+        in: path
+        description: "id of contact that need to be updated"
+        required: true
+        schema:
+          type: integer
+    delete:
+      tags: 
+      - Contact
+      responses:
+        '200':
+          description: contact updated
+  /covid:
+    parameters:
+      - in: query
+        name: "body"
+        description: "Covid object that needs to be declared"
+        required: true
+        schema:
+          $ref: '#/components/schemas/Covid'
+    post:
+      tags: 
+      - Covid
+      responses:
+        '200':
+          description: covid declared
+  /alert:
+    parameters:
+      - in: query
+        name: "body"
+        description: "Alert object that needs to be sent"
+        required: true
+        schema:
+          $ref: '#/components/schemas/Alert'
+    post:
+      tags: 
+      - Alert
+      responses:
+        '200':
+          description: alert sent
+components:
+  schemas:
+    Profile:
+      type: object
+      properties:
+        idprofile:
+          type: integer
+        lastname:
+          type: string
+        firstname:
+          type: string
+        age:
+          type: integer
+        address:
+          type: string
+        email:
+          type: string
+        covidstatus:
+          type: string
+        numberofcontact:
+          type: integer
+      required:
+      - lastname
+      - email
+    Contact:
+      type: object
+      properties:
+        idcontact:
+          type: integer
+        idprofile:
+          type: integer
+        datetime:
+          type: string
+          format: date-time
+        address:
+          type: string
+        type:
+          type: string
+          enum:
+            - withMask
+            - withoutMask
+        contact:
+          oneOf:
+          - type: integer
+          - type: object
+            properties:
+              'lastname':
+                type: string
+              'firstname':
+                type: string
+              'email':
+                type: string
+    Covid:
+      type: object
+      properties:
+        idcovid:
+          type: integer
+        idprofile:
+          type: integer
+        testdate:
+          type: string
+          format: date
+    Alert:
+      type: object
+      properties:
+        idalert:
+          type: integer
+        idcontact:
+          type: integer
+        contactdate:
+          type: string
+          format: date
+        listrecipient:
+          type: array
+          items:
+            $ref: '#/components/schemas/Profile'
+
+    

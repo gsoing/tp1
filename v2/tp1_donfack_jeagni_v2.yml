@@ -1,0 +1,466 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger stop Covid
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths:
+  /profiles:
+    post:
+      summary: Create a profile
+      operationId: createProfile
+      tags:
+        - profiles
+      requestBody :
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Profile"
+      responses:
+        '200':
+          description: Successfully created a new profil
+        '400':
+          $ref: "#/components/schemas/Error"
+  /profiles/{secretId}:
+    patch:
+      summary: Update a profile by using is secretId
+      operationId: updateProfile
+      tags:
+        - profiles
+      parameters:
+        - name: secretId
+          in: path
+          description: secret identifiant of profile that needs to be updated, this secret id is only know by the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/x-www-form-urlencoded':
+            schema:
+              properties:
+                lastname:
+                  description: Updated lastname of the profile
+                  type: string
+                firstname:
+                  description: Updated firstname of the profile
+                  type: string
+                address:
+                  description: Updated address of the profile
+                  type: string
+                age:
+                  description: Updated lastname of the profile
+                  type: integer
+              required:
+                - lastname
+      responses:
+        '200':
+          description: Profile updated.
+          content:
+            'application/json': {}
+        '405':
+          description: Method Not Allowed
+          content: 
+            'application/json': {}
+  /profiles/{lastname}:
+    get:
+      description: Info for a specific profile by lastname
+      operationId: GetProfilByLastname
+      tags:
+        - profiles
+      parameters:
+        - name: lastname
+          in: path
+          required: true
+          description: The lastname of the profile to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned an profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastname:
+                    type: string
+                  firstname:
+                    type: string
+                  address:
+                    type: string
+                  email:
+                    type: string
+                  age:
+                    type: integer
+        '400':
+          $ref: "#/components/schemas/Error"
+  /profiles/{email}:
+    get:
+      description: Info for a specific profile by email
+      tags:
+        - profiles
+      operationId: GetProfilByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          description: The email of the profile to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned an profile by email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastname:
+                    type: string
+                  firstname:
+                    type: string
+                  address:
+                    type: string
+                  email:
+                    type: string
+                  age:
+                    type: integer
+        '400':
+          $ref: "#/components/schemas/Error"
+  /profiles/{secretId}/contacts:
+    parameters:
+      - name: secretId
+        in: path
+        required: true
+        description: the profile identifier, as secretId
+        schema:
+          type: string
+    get:
+      description: Get all Contact of known profile
+      tags:
+        - contacts
+      operationId: getProfileContact
+      responses:
+        '200':
+          description: the profile's contact
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Contacts"
+     
+  /profiles/{secretId}/contacts/{contactId}:
+    parameters:
+      - name: secretId
+        in: path
+        required: true
+        description: the profile identifier, as secretId
+        schema:
+          type: string
+      - name: contactId
+        in: path
+        required: true
+        description: the contact identifier, as contactId
+        schema:
+          type: string
+    patch:
+      operationId: updateContact
+      tags:
+        - contacts
+      requestBody:
+        content:
+          'application/x-www-form-urlencoded':
+            schema:
+              properties:
+                date-hour:
+                  description: Updated date and hour of contact
+                  type: string
+                location:
+                  description: Updated location of contact
+                  type: string
+                type:
+                  description: Updated type of the contact
+                  type: string
+                address:
+                  description: Updated address of the contact
+                  type: string
+                profileId:
+                  description: Updated profile Id of the contact
+                  type: integer
+      responses:
+        '200':
+          description: Contact updated.
+          content:
+            'application/json': {}
+        '405':
+          description: Method Not Allowed
+          content: 
+            'application/json': {}
+    delete:
+      tags:
+        - contacts
+      description: "Delete a contact"
+      operationId: "deleteProfileContact"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Contact not found"
+  /profile/{secretId}/declare:
+    parameters:
+      - name: secretId
+        in: path
+        required: true
+        description: the profile identifier, as secretId only know by user
+        schema:
+          type: string
+    post:
+      summary: Create a Declaration
+      operationId: createDeclaration
+      tags:
+        - declarations
+      requestBody :
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Declaration"
+      responses:
+        '200':
+          description: Successfully created a new declaration
+        '400':
+          $ref: "#/components/schemas/Error"
+  /admin/profile:
+    get:
+      description: Info for a specific profile by email or lastname
+      tags:
+        - admin
+      operationId: AdminSearchProfilByEmail
+      parameters:
+        - name: email
+          in: query
+          required: true
+          description: The email of the profile to retrieve, single result due to fact email is unique
+          schema:
+            type: string
+        - name: lastname
+          in: query
+          required: true
+          description: The lastname of the profile to retrieve, single result due to fact email is unique
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned an profile by lastname
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    lastname:
+                      type: string
+                    firstname:
+                      type: string
+                    email:
+                      type: string
+          links:
+            profile:
+              # the target link operationId
+              operationId: AdminGetProfilById
+              parameters:
+                # get the `id` field from the request path parameter named `id`
+                profileId: $response.body.email
+        '400':
+          $ref: "#/components/schemas/Error"
+        
+  /admin/profile/{email}:
+    get:
+      summary: view profile from email
+
+      description: Info for a specific profile by his email, single result due to fact email is unique
+      tags:
+        - admin
+      operationId: AdminGetProfilByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          description: The email of the profile to retrieve, single result due to fact email is unique
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned an profile by Id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastname:
+                    type: string
+                  firstname:
+                    type: string
+                  age:
+                    type: integer
+                  address:
+                    type: string
+                  email:
+                    type: string
+                  status:
+                    type: boolean
+                  number_contacts:
+                    type: integer
+        '400':
+          $ref: "#/components/schemas/Error"
+          
+  /admin/profile/{secretId}/contacts:
+    parameters:
+        - name: secretId
+          in: path
+          required: true
+          description: The secretId of the profile to retrieve
+          schema:
+            type: string
+    get:
+      summary: Get List all contacts of specific profile
+      operationId: GetContactsProfile
+      tags:
+        - admin
+      responses:
+        '200':
+          description: the profile's contact
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Contacts"
+        '400':
+          $ref: "#/components/schemas/Error"
+          
+  /admin/notification
+    parameters:
+      - name: profileList
+        in: body
+        description: List of profile to send notification
+        required: true
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              profileId:
+                type: string
+              dateContact:
+                type: string
+                format: date
+    post:
+      summary: Send Notifications
+      operationId: SendNotification
+      tags:
+        - admin
+      responses:
+        '200':
+          description: Successfully send
+        '400':
+          $ref: "#/components/schemas/Error"
+        
+components:
+  schemas:
+    Profile:
+      type: object
+      required:
+        - lastname
+        - email
+      properties:
+        id:
+          type: integer
+          format: int64
+        secretId:
+          type: string
+        lastname:
+          type: string
+        firstname:
+          type: string
+        address:
+          type: string
+        email:
+          type: string
+        age:
+          type: integer
+          format: int32
+    Profiles:
+      type: array
+      items:
+        $ref: "#/components/schemas/Profile"
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: "int64"
+        date-hour:
+          type: "string"
+          format: date-time
+        location:
+          type: "string"
+        type:
+          type: "string"
+        address:
+          type: "string"
+        profileId:
+          type: integer
+          format: "int64"
+    Contacts:
+      type: array
+      items:
+        $ref: "#/components/schemas/Contact"
+    Declaration:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: "int64"
+        profileId:
+          type: integer
+          format: "int64"
+        status:
+          type: boolean
+        date-test:
+          type: "string"
+          format: date
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        profileId:
+          type: integer
+        dateContact:
+          type: "string"
+          format: date
+          
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
