@@ -9,6 +9,8 @@ servers:
   - url: http://stopcovid/api/v1
 paths:
   /profiles:
+    # Techniquement si l'email est ta clé unique tu peux faire création et modification
+    # via PUT /profiles/{mail}
     post:
       summary: Create a new profile
       tags:
@@ -74,12 +76,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  # Pas évident dans le code de faire la différence entre /contacts/{mail}
+  # et /contacts/{email}
   /contacts/{name}:
     get:
       summary: Return a Contact thanks to the name
       tags:
         - Utilisateur
       parameters:
+        # il faut paginer la recherche
         - name: name
           in: path
           description: name of the contact
@@ -91,6 +96,7 @@ paths:
           description: Return a contact
           content:
             application/json:
+              # On peut trouver plusieurs personnes avec le même nom
               schema:
                 $ref: '#/components/schemas/Contact'
         default:
@@ -124,6 +130,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  # Cette ressource est pas très lisible, normalement /contacts est déjà une liste
   /contacts/listofcontacts:
     get:
       summary: Return the list of contacts of the user
@@ -189,6 +196,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   /profiles/positivetest:
+    # il aurait été sympa de préciser comment tu sais quelle est le profile qui se déclare malade
     post:
       summary: Declaration a the positive test
       tags:
@@ -209,6 +217,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  # Même remarque que pour les ressources /contacts
   /users/{name}:
     get:
       summary: Return a user thanks to the name
@@ -284,12 +293,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  # Pourquoi ajouter /listofcontacts après contacts ? 
   /users/{email}/contacts/listofcontacts:
     get:
       summary: Return the contacts list of a user
       tags:
         - Administrateur
       parameters:
+        # Et la pagination ????
         - name: email
           in: path
           description: email of the user
@@ -319,6 +330,7 @@ paths:
         required: true
         content:
           application/json:
+            # Manque la date du contact
             schema:
               $ref: '#/components/schemas/Users'
       responses:

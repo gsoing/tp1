@@ -7,8 +7,9 @@ info:
     name: MIT
 servers:
   - url: http://stopcovid/api
+# Attention car dans le code ce ne sera pas évident de faire la différence entre 
+# GET /contacts/{mail} et GET /contacts/{email}
 paths:
-
   /profiles:
     post:
       summary: Create a profile, 
@@ -30,7 +31,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  
   /profiles/{email}:
     put:
       tags:
@@ -57,7 +57,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
   /contacts/{name}:
     get:
       tags:
@@ -84,7 +83,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  
   /contacts/{email}:
     put:
       tags:
@@ -112,7 +110,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    
     get:
       tags:
       - "CONTACT"
@@ -138,9 +135,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-      
   /contacts/list:
     get:
+      # Manque la pagination
       tags:
       - "CONTACT"
       summary: search the list of contacts for the current user
@@ -158,7 +155,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
   /contacts/list/{email}:
     get:
       tags:
@@ -185,7 +181,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  
     delete:
       tags:
       - "CONTACT"
@@ -207,7 +202,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  
   /cases:
     post:
       summary: Create a case
@@ -229,7 +223,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-      
   /declarations:
     post:
       summary: Create a declaration for the current user
@@ -251,8 +244,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
   /users/{name}:
+    # Avec une recherche par nom on peut retourner plusieurs profiles, il faut retourner un tableau
+    # et paginer la recherche
     get:
       tags:
       - "USER"
@@ -277,7 +271,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  
   /users/{email}:
     get:
       tags:
@@ -291,6 +284,7 @@ paths:
           schema:
             type: string
       responses:
+        # On peut retourner aussi un 404 si le mail n'existe pas
         '200':
           description: user with email not found
           content:
@@ -302,8 +296,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-                
+                $ref: "#/components/schemas/Error"    
   /userprofiles/{email}:
     get:
       tags:
@@ -329,13 +322,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
   /userprofiles/{email}/contacts/list:
     get:
       tags:
       - "USERPROFILE"
       summary: search all contacts of the selected userprofile by the email
       operationId: searchAllContactsOfTheUserProfile
+      # La pagination aurait été pas mal
       parameters:
         - name: email
           in: path
@@ -355,8 +348,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-                
+                $ref: "#/components/schemas/Error"           
   /alert:
     post:
       summary: Create an alert and send it to the list of user (users) 
@@ -378,7 +370,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
 components:
   schemas:
     Profile:

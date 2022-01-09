@@ -25,9 +25,7 @@ tags:
 schemes:
 - "https"
 - "http"
-paths:
-  
-          
+paths:    
   /user/contact/:
     get:
       tags:
@@ -39,17 +37,18 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
+      # un GET n'a pas besoin de body, et toute recherche doit être paginée
       - in: "body"  #Requierement fait dans defintions
         name: "body"
         description: "get contact object"
         schema:
           $ref: "#/definitions/Contact"
       responses:
+        # Un utilisateur a plusieurs contacts, il aurait été judicieux de retourner une liste
         "200":
           description: "successful operation"
           schema:
             $ref: "#/definitions/Contact"
-          
   /user/contact/{username}:
     put:
       tags:
@@ -127,10 +126,7 @@ paths:
           description: "Invalid user supplied"
         "404":
           description: "User not found"
-          
-          
-      
-  
+# Normalement les ressources représentant un ensemble sont au pluriel
   /user:
     post:
       tags:
@@ -148,9 +144,10 @@ paths:
         schema:
           $ref: "#/definitions/User"
       responses:
+        # Quel est le code retour, il faut également retourné l'objet passé en entré
+        # notamment pour retourner l'id
         default:
           description: "successful operation"
-    
     put:
       tags:
       - "user"
@@ -161,19 +158,17 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
-      
       - in: "body"   #Requierement fait dans defintions
         name: "body"
         description: "Updated user object"
         schema:
           $ref: "#/definitions/User"
+      # Et qu'est ce qui se passe si tout se passe bien ?
       responses:
         "400":
           description: "Invalid user supplied"
         "404":
           description: "User not found"
-  
-  
   /user/email/{email}:
     get:
       tags:
@@ -199,7 +194,6 @@ paths:
           description: "Invalid username supplied"
         "404":
           description: "User not found"
-          
   /user/username/{username}:
     get:
       tags:
@@ -210,6 +204,7 @@ paths:
       produces:
       - "application/xml"
       - "application/json"
+      # Ca aurait été pas mal de paginer
       parameters:
       - name: "username"
         in: "path"
@@ -217,6 +212,7 @@ paths:
         required: true
         type: "string"
       responses:
+        # On peut trouver plusieurs utilisateurs avec un nom
         "200":
           description: "successful operation"
           schema:
@@ -249,21 +245,7 @@ paths:
 #          description: "Invalid username supplied"
 #        "404":
 #          description: "User not found"
-securityDefinitions:
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:pets: "modify pets in your account"
-      read:pets: "read your pets"
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
 definitions:
-  
-
   User:
     type: "object"
     required : 
@@ -286,11 +268,6 @@ definitions:
         type: "string"
     xml:
       name: "User"
-
-  
-  
-  
-  
   Contact : 
     type: "object"
     required :
@@ -302,11 +279,13 @@ definitions:
       date :
         type: "string"
         format : "date"
+      # Un date-time est au format 'YYYY-DD-MM HH:Mi:SS' et contient donc déjà la date
       Hour :
         type : "string"
         format: "date-time"
       place :
         type: "string"
+      # Que veux dire vrai ? que veut dire faux ?
       contactType :
         type: "boolean"
       User : 
@@ -321,12 +300,3 @@ definitions:
             email: 
               type: "string"
               format: email
-        
-      
-        
-  
-  
-
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"

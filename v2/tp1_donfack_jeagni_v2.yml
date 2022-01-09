@@ -57,6 +57,7 @@ paths:
               required:
                 - lastname
       responses:
+        # Manque les cas 400 mauvaise entrée et 404 si l'id n'existe pas
         '200':
           description: Profile updated.
           content:
@@ -67,6 +68,9 @@ paths:
             'application/json': {}
   /profiles/{lastname}:
     get:
+      # Pourquoi ne pas avoir réutiliser la même logique que pour la recherche de profile 
+      # de plus on peut retourner plusieurs profile pour un nom de famille
+      # il faut retourner une liste
       description: Info for a specific profile by lastname
       operationId: GetProfilByLastname
       tags:
@@ -133,6 +137,7 @@ paths:
           $ref: "#/components/schemas/Error"
   /profiles/{secretId}/contacts:
     parameters:
+      # Manque la pagination
       - name: secretId
         in: path
         required: true
@@ -156,7 +161,6 @@ paths:
             application/json:    
               schema:
                 $ref: "#/components/schemas/Contacts"
-     
   /profiles/{secretId}/contacts/{contactId}:
     parameters:
       - name: secretId
@@ -210,11 +214,14 @@ paths:
       description: "Delete a contact"
       operationId: "deleteProfileContact"
       responses:
+        # Manque la réponse si tout est ok
         "400":
           description: "Invalid ID supplied"
         "404":
           description: "Contact not found"
   /profile/{secretId}/declare:
+    # declare n'est pas une ressource c'est une action et si tu veux rester cohérente c'est 
+    # /profiles/{secretId}/declare
     parameters:
       - name: secretId
         in: path
@@ -239,12 +246,14 @@ paths:
         '400':
           $ref: "#/components/schemas/Error"
   /admin/profile:
+    # Normalement une liste est représentée par un pluriel /admin/profiles
     get:
       description: Info for a specific profile by email or lastname
       tags:
         - admin
       operationId: AdminSearchProfilByEmail
       parameters:
+        # Manque la pagination
         - name: email
           in: query
           required: true
@@ -266,6 +275,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  # Manque l'id du profile
                   properties:
                     lastname:
                       type: string
@@ -281,12 +291,10 @@ paths:
                 # get the `id` field from the request path parameter named `id`
                 profileId: $response.body.email
         '400':
-          $ref: "#/components/schemas/Error"
-        
+          $ref: "#/components/schemas/Error"  
   /admin/profile/{email}:
     get:
       summary: view profile from email
-
       description: Info for a specific profile by his email, single result due to fact email is unique
       tags:
         - admin
@@ -321,8 +329,7 @@ paths:
                   number_contacts:
                     type: integer
         '400':
-          $ref: "#/components/schemas/Error"
-          
+          $ref: "#/components/schemas/Error"   
   /admin/profile/{secretId}/contacts:
     parameters:
         - name: secretId
@@ -334,6 +341,7 @@ paths:
     get:
       summary: Get List all contacts of specific profile
       operationId: GetContactsProfile
+      # Manque les paramètres pour paginer la recherche
       tags:
         - admin
       responses:
@@ -350,34 +358,31 @@ paths:
                 $ref: "#/components/schemas/Contacts"
         '400':
           $ref: "#/components/schemas/Error"
-          
-  /admin/notification
-    parameters:
-      - name: profileList
-        in: body
-        description: List of profile to send notification
-        required: true
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              profileId:
-                type: string
-              dateContact:
-                type: string
-                format: date
+  /admin/notification:
     post:
       summary: Send Notifications
       operationId: SendNotification
       tags:
         - admin
+      requestBody:
+        description: List of profile to send notification
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  profileId:
+                    type: string
+                  dateContact:
+                    type: string
+                    format: date
       responses:
         '200':
           description: Successfully send
         '400':
-          $ref: "#/components/schemas/Error"
-        
+          $ref: "#/components/schemas/Error"     
 components:
   schemas:
     Profile:
@@ -451,8 +456,7 @@ components:
           type: integer
         dateContact:
           type: "string"
-          format: date
-          
+          format: date       
     Error:
       type: object
       required:

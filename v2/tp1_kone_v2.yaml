@@ -12,8 +12,10 @@ tags:
   - name: Contact
   - name: Covid
   - name: Alert
+# Manque la récupération de liste des contacts liés à un profile
 paths:
   /profile:
+    # Vu comment tu utilises la ressource elle devrait être pluriel
     parameters:
       - in: query
         name: "body"
@@ -28,6 +30,7 @@ paths:
         '200':
           description: profile added
   /profile/update/{id}:
+    # Pourquoi mettre update dans l'url ? alors qu'on a la méthode PUT qui indique que c'est un update
     parameters:
       - name: "id"
         in: path
@@ -35,15 +38,15 @@ paths:
         required: true
         schema:
           type: integer
-      - in: query
-        name: "body"
-        description: "Profile object that needs to be updated"
-        required: true
-        schema:
-          $ref: '#/components/schemas/Profile'
     put:
       tags: 
       - Profile
+      requestBody:
+        description: "Profile object that needs to be updated"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
       responses:
         '200':
           description: profile updated
@@ -66,6 +69,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
   /profile/user/{nameoremail}:
+    # il faut retourner une liste, et puis avoir un paramètre qui est de 2 types différent
+    # ce n'est pas super pratique à gérer par la suite
     parameters:
       - name: "nameoremail"
         in: path
@@ -84,6 +89,7 @@ paths:
               schema:
                 type: integer
   /profile/admin/{nameoremail}:
+    # Même remarque que pour la méthode précédente
     parameters:
       - name: "nameoremail"
         in: path
@@ -99,6 +105,7 @@ paths:
           description: "Profil got"
           content: 
             application/json:
+              # Manque l'id
               schema:
                 type: object
                 properties:
@@ -127,6 +134,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Contact'
   /contact/update/{id}:
+    # Pourquoi mettre /update dans le nom de la ressource, tu fais un PUT c'est déjà asses explicite
     parameters:
       - name: "id"
         in: path
@@ -147,6 +155,7 @@ paths:
         '200':
           description: contact updated
   /contact/delete/{id}:
+    # Même remarque qu'au dessus
     parameters:
       - name: "id"
         in: path
@@ -264,5 +273,3 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Profile'
-
-    

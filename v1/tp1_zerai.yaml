@@ -28,6 +28,7 @@ schemes:
 - "http"
 paths:
   /contact:
+    # Généralement une liste est au pluriel donc /contacts
     post:
       tags:
       - "contact"
@@ -48,9 +49,11 @@ paths:
         schema:
           $ref: "#/definitions/ContactCase"
       responses:
+        # 405 cela signifie que la méthode utilisée HTTP n'est pas la bonne, ici on est plus sur une 400
         "405":
           description: "Invalid input"
     put:
+      # Ce n'est pas cohérent avec le fait que tu fais un DELETE sur /contact/{contactId} 
       tags:
       - "contact"
       summary: "Update an existing contact case"
@@ -85,6 +88,7 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
+      # manque les paramètres pour la pagination
       - name: "profileid"
         in: "query"
         description: "Provide profile id to get a list of contact cases"
@@ -146,6 +150,7 @@ paths:
         schema:
           $ref: "#/definitions/Profile"
       responses:
+        # Il faut détailler les codes retour
         default:
           description: "successful operation"
     put:
@@ -165,6 +170,7 @@ paths:
         schema:
           $ref: "#/definitions/Profile"
       responses:
+        # Et si tout est ok ?
         "400":
           description: "Invalid profile supplied"
         "404":
@@ -242,19 +248,7 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Profile not found"
-  
-    
-securityDefinitions:
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:pets: "modify pets in your account"
-      read:pets: "read your pets"
-
 definitions:
-  
   Profile:
     type: "object"
     properties:
@@ -316,6 +310,3 @@ definitions:
         type: "string"
     xml:
       name: "ContactCase"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"

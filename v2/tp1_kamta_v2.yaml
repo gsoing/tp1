@@ -57,6 +57,7 @@ paths:
               required:
                 - lastname
       responses:
+        # Manque les cas 400 mauvaise entrée et 404 si l'id n'existe pas
         '200':
           description: Profile updated.
           content:
@@ -67,6 +68,9 @@ paths:
             'application/json': {}
   /profiles/{lastname}:
     get:
+      # Pourquoi ne pas avoir réutiliser la même logique que pour la recherche de profile 
+      # de plus on peut retourner plusieurs profile pour un nom de famille
+      # il faut retourner une liste
       description: Info for a specific profile by lastname
       operationId: GetProfilByLastname
       tags:
@@ -133,6 +137,7 @@ paths:
           $ref: "#/components/schemas/Error"
   /profiles/{secretId}/contacts:
     parameters:
+      # Manque la paginiation
       - name: secretId
         in: path
         required: true
@@ -210,11 +215,14 @@ paths:
       description: "Delete a contact declared"
       operationId: "deleteProfileContact"
       responses:
+        # Manque la réponse si tout est ok
         "400":
           description: "Invalid ID supplied"
         "404":
           description: "Contact not found"
   /profile/{secretId}/declare:
+    # declare n'est pas une ressource c'est une action et si tu veux rester cohérente c'est 
+    # /profiles/{secretId}/declare
     parameters:
       - name: secretId
         in: path
@@ -239,12 +247,14 @@ paths:
         '400':
           $ref: "#/components/schemas/Error"
   /admin/profile:
+    # Normalement une liste est représentée par un pluriel /admin/profiles
     get:
       description: Info for a specific profile by email or lastname
       tags:
         - admin
       operationId: AdminSearchProfilByEmail
       parameters:
+        # Manque la pagination
         - name: email
           in: query
           required: true
@@ -266,6 +276,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  # Manque l'id du profile
                   properties:
                     lastname:
                       type: string
@@ -331,6 +342,7 @@ paths:
             type: string
     get:
       operationId: GetContactsProfile
+      # Manque les paramètres pour paginer la recherche
       tags:
         - admin
       responses:
@@ -347,23 +359,22 @@ paths:
                 $ref: "#/components/schemas/Contacts"
         '400':
           $ref: "#/components/schemas/Error"
-  /admin/notification
-    parameters:
-      - name: profileList
-        in: body
+  /admin/notification:
+    post:
+      requestBody:
         description: List of profile to send notification
-        required: true
-        schema:
-          type: array
-          items:
-          type: object
-            properties:
-              profileId:
-                type: string
-              dateContact:
-                type: string
-                format: date
-  post:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  profileId:
+                    type: string
+                  dateContact:
+                    type: string
+                    format: date
       responses:
         '200':
           description: Successfully created a new declaration

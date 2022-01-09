@@ -8,7 +8,8 @@ info:
 servers:
   - url: http://stopcovid/api/v1
 paths:
-
+  # Vu que tu utilises le mail comme clé tu aurais pu faire la création et la modification via
+  # PUT /profiles/{mail}
   /profiles:
     post:
       summary: Create a new profile
@@ -77,6 +78,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /contacts/{name}:
     get:
+      # Via un nom on récupère une liste
       summary: Return a Contact thanks to the name
       tags:
         - Contact
@@ -127,6 +129,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /contacts/listofcontacts/{email}:
     get:
+      # Je ne vois pas bien la différence avec /contacts/listofcontacts
       summary: Return the list of contacts of the user
       tags:
         - Contact
@@ -150,6 +153,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    # Pas très cohérent avec la méthode au dessus, normalement un PUT est l'image d'un get
+    # sur le GET tu récupères une liste et la tu écris un objet unique
     put:
       summary: Update an existing contact
       tags:
@@ -187,6 +192,7 @@ paths:
           schema:
             type: string
       responses:
+        # Le code 201 veut dire créé, ici c'est plutot 204
         '201':
           description: Contact Deleted
         default:
@@ -238,6 +244,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /users/{name}:
     get:
+      # Une recherche par nom retourne plusieurs résultats, il faut donc qu'elle soit paginée
       summary: 'You are searching a user by its name'
       tags:
         - Users
